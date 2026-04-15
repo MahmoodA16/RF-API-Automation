@@ -1,0 +1,9 @@
+C:\git\SourceCode\output\api\RapidMS.ClientAPI.dll.config
+C:\git\SourceCode\output\api\RapidMS.ClientAPI.dll
+C:\git\SourceCode\output\api\RapidMS.ClientAPI.pdb
+C:\git\SourceCode\output\api\RapidMS.ClientAPI.tlb
+C:\git\SourceCode\Tools\RapidMS.ClientAPI\obj\Debug\RapidMS.ClientAPI.csproj.AssemblyReference.cache
+C:\git\SourceCode\Tools\RapidMS.ClientAPI\obj\Debug\RapidMS.ClientAPI.csproj.CoreCompileInputs.cache
+C:\git\SourceCode\Tools\RapidMS.ClientAPI\obj\Debug\RapidMS..CE6052E6.Up2Date
+C:\git\SourceCode\Tools\RapidMS.ClientAPI\obj\Debug\RapidMS.ClientAPI.dll
+C:\git\SourceCode\Tools\RapidMS.ClientAPI\obj\Debug\RapidMS.ClientAPI.pdb

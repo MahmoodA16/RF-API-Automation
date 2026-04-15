@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Load Pull Comparison Report</title>
+    <style>
+        body{font-family: sans-serif; margin: 2rem;}
+        h1{margin-bottom: 1rem;}
+        h2{margin-bottom: 0.5rem; margin-top: 1.5rem;}
+        table{border-collapse: collapse; width: 100%; margin-bottom: 1rem;}
+        th, td{border: 1px solid #ccc; padding: 0.5rem; text-align: center;}
+        th{background: #f0f0f0;}
+        .fail{background: #fdd;}
+        .pass{background: #dfd;}
+        .config-info{background: #e8f4fd; margin: 1rem 0; padding: 1rem; border-radius: 5px;}
+        .key-info{background: #f9f9f9; margin: 1rem 0; padding: 1rem; border-radius: 5px;}
+        .key-info strong{margin-right: 1rem;}
+    </style>
+</head>
+<body>
+    <h1>Load Pull Comparison Report: {{verdict}}</h1>
+    
+    <div class="config-info">
+        <h2>Test Configuration</h2>
+        <table>
+            <tr><th>Mode</th><td>{{mode_name}}</td>
+                <th>Source Cal File</th><td>{{source_cal}}</td></tr>
+            <tr><th>{{bandwidth_label}}</th><td>{{bandwidth_value}}</td>
+                <th>Vector Cal File</th><td>{{vector_cal}}</td></tr>
+            <tr><th>Frequency</th><td>{{frequency}} GHz</td>
+                <th>Initialization File</th><td>{{init_file}}</td></tr>
+            {% if waveform %}
+            <tr><th>Waveform</th><td>{{waveform}}</td>
+                <th></th><td></td></tr>
+            {% endif %}
+        </table>
+    </div>
+
+    
+    {% if not err_dict %}
+        <p>All parameters are within tolerance.</p>
+    {% else %}
+        {% for key, error_list in err_dict.items() %}
+            <h2>Measurement Point</h2>
+            
+            <div class="key-info">
+                <strong>Power:</strong> {{key.psource}} dBm
+                <strong>Target Gamma:</strong> {{key.targetGamma_1f0}}
+                <strong>Target Phase:</strong> {{key.targetPhase_1f0}}°
+            </div>
+            
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Gold Standard</th>
+                    <th>Measured</th>
+                    <th>Difference</th>
+                    <th>Status</th>
+                </tr>
+                {% for target, diff_value, tolerance in error_list %}
+                    <tr class="fail">
+                        <td>{{target}}</td>
+                        <td>
+                            {% if gold_standard_dict and key in gold_standard_dict %}
+                                {% set gs_headers, gs_values = gold_standard_dict[key] %}
+                                {% if target in gs_headers %}
+                                    {% set gs_index = gs_headers.index(target) %}
+                                    {{'%.3f' | format(gs_values[gs_index]) if gs_values[gs_index] is number else gs_values[gs_index]}}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if measured_dict and key in measured_dict %}
+                                {% set meas_headers, meas_values = measured_dict[key] %}
+                                {% if target in meas_headers %}
+                                    {% set meas_index = meas_headers.index(target) %}
+                                    {{'%.3f' | format(meas_values[meas_index]) if meas_values[meas_index] is number else meas_values[meas_index]}}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td>{{'%.3f' | format(diff_value)}} (tol = {{'%.3f' | format(tolerance)}})</td>
+                        <td>FAIL</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>S Parameter Comparison Report</title>
+    <style>
+        body{font-family: sans-serif; margin: 2rem;}
+        h1{margin-bottom: 1rem;}
+        h2{margin-bottom: 0.5rem; margin-top: 1.5rem;}
+        table{border-collapse: collapse; width: 100%; margin-bottom: 1rem;}
+        th, td{border: 1px solid #ccc; padding: 0.5rem; text-align: center;}
+        th{background: #f0f0f0;}
+        .fail{background: #fdd;}
+        .pass{background: #dfd;}
+        .config-info{background: #e8f4fd; margin: 1rem 0; padding: 1rem; border-radius: 5px;}
+    </style>
+</head>
+<body>
+    <h1>S Parameter Comparison Report: {{verdict}}</h1>
+    
+    <div class="config-info">
+        <h2>Test Configuration</h2>
+        <table>
+            <tr><th>Mode</th><td>{{mode_name}}</td>
+                <th>Source Cal File</th><td>{{source_cal}}</td></tr>
+            <tr><th>IF Bandwidth</th><td>{{if_bandwidth}}</td>
+                <th>Vector Cal File</th><td>{{vector_cal}}</td></tr>
+            <tr><th>Test File</th><td>{{file}}</td>
+                <th>Mag Tolerance</th><td>{{mag_tol}}</td></tr>
+            <tr><th>Phase Tolerance</th><td>{{phase_tol}}</td>
+                <th></th><td></td></tr>
+        </table>
+    </div>
+
+    {% for frequency,params in err_dict.items() %}
+        <h2>{{frequency}} GHz</h2>
+        <table>
+            <tr>
+                <th>Parameter</th>
+                <th>Mag Diff (db)</th>
+                <th>Phase Diff (degrees)</th>
+                <th>Status</th>
+            </tr>
+            {% for param, (md, pd) in params.items()%}
+             {% set status = 'PASS' if md<=mag_tol and pd<=phase_tol else 'FAIL' %}
+            <tr class= "{{status|lower}}">
+                <td>{{param.upper()}}</td>
+                <td>{{'%.3f' | format(md)}}</td>
+                <td>{{'%.3f' | format(pd)}}</td>
+                <td>{{status}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endfor %}
+        {% if not err_dict %}
+            <p>All parameters are within tolerance.</p>
+        {% endif %}
+</body>
+</html>

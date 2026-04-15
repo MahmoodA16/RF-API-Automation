@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Test Output</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; position: relative; min-height: 100vh; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; }
+    th { background: #f0f0f0; }
+    .fail { background: #fdd; }
+    .pass { background: #dfd; }
+    
+    .test-number { 
+      text-align: center; 
+      font-weight: bold; 
+      width: 80px; 
+    }
+    
+    .file-link {
+      color: #3498db;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    
+    .execution-summary {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: #e8f4fd;
+      padding: 15px;
+      border-radius: 8px;
+      border: 2px solid #3498db;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      font-size: 14px;
+      z-index: 1000;
+      min-width: 250px;
+    }
+    
+    .execution-summary h4 {
+      margin: 0 0 10px 0;
+      color: #2c3e50;
+      font-size: 16px;
+    }
+    
+    .execution-summary table {
+      border: none;
+      margin: 0;
+      width: 100%;
+    }
+    
+    .execution-summary td {
+      border: none;
+      padding: 3px 8px;
+      font-size: 13px;
+    }
+    
+    .pass-count { color: #27ae60; font-weight: bold; }
+    .fail-count { color: #e74c3c; font-weight: bold; }
+    .total-count { color: #2c3e50; font-weight: bold; }
+    .time-count { color: #8e44ad; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Test Session Summary</h1>
+  <table>
+    <tr><th>JIRA Issue No.</th><td>{{ info.jira }}</td>
+        <th>Hardware</th><td>{{ info.hardware }}</td></tr>
+    <tr><th>Commit No.</th><td>{{ info.commit }}</td>
+        <th>Serial Number</th><td>{{ info.sn }}</td></tr>
+    <tr><th>Firmware Version</th><td>{{ info.fw }}</td>
+        <th>Date</th><td>{{ info.date }}</td></tr>
+  </table>
+  
+  <h2>Test Results</h2>
+  <table>
+    <tr>
+      <th class="test-number">Test #</th>
+      <th>Test Type</th>
+      <th>Result</th>
+      <th>Notes</th>
+      <th>Data</th>
+    </tr>
+    {% for t in tests %}
+    <tr class="{{ 'fail' if t.result=='FAIL' else 'pass'}}">
+      <td class="test-number">{{ loop.index }}</td>
+      <td>{{ t.test_type }}</td>
+      <td>{{ t.result }}</td>
+      <td>{% if t.result=='FAIL' %}
+          <a href="{{ t.link }}">See Report</a>
+        {% else %}
+            {{ t.notes }}
+        {% endif %}</td>
+      <td>
+        {% if t.data_link %}
+          <a href="{{ t.data_link }}" target="hidden_iframe" class="file-link">
+            {{ t.data }}
+          </a>
+        {% else %}
+          <span style="color: #7f8c8d; font-style: italic;">{{ t.data }}</span>
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <!-- Hidden iframe to handle file opening without page navigation -->
+  <iframe name="hidden_iframe" style="display:none;"></iframe>
+
+  <!-- Bottom left execution summary -->
+  <div class="execution-summary">
+    <h4>📊 Execution Summary</h4>
+    <table>
+      <tr>
+        <td>Total Tests:</td>
+        <td class="total-count">{{ info.total_tests }}</td>
+      </tr>
+      <tr>
+        <td>Passed:</td>
+        <td class="pass-count">{{ info.passed_tests }}</td>
+      </tr>
+      <tr>
+        <td>Failed:</td>
+        <td class="fail-count">{{ info.failed_tests }}</td>
+      </tr>
+      <tr>
+        <td>Execution Time:</td>
+        <td class="time-count">{{ info.execution_time }}</td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>
